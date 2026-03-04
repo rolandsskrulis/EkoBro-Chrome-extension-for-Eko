@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "ekobro",
+  "version": "1.0.0",
+  "description": "Modifies website UI, adds shortcuts, and enhances user experience on Eko's experience review pages.",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["https://qc.eko.com/experience-review/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "48": "resources/ekobro48.png",
+    "128": "resources/ekobro128.png"
+  }
+}
