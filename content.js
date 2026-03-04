@@ -58,14 +58,14 @@ const SELECTORS = {
 
 
 // ***************** Main Logic *****************
-// Hotkey: Open live PDP on hotkey cmd+shift+6
+// Hotkey: Open live PDP on hotkey cmd+shift+7
 document.addEventListener("keydown", (e) => {
   if (e.metaKey && e.shiftKey && e.key === "7") {
     clickButton(SELECTORS.pdpButton);
   }
 });
 
-// Hotkey: Open Backstage on hotkey cmd+shift+7
+// Hotkey: Open Backstage on hotkey cmd+shift+8
 document.addEventListener("keydown", (e) => {
   if (e.metaKey && e.shiftKey && e.key === "8") {
     clickButton(SELECTORS.backstageButton);
@@ -397,17 +397,6 @@ function waitForControls() {
 
 function registerSuperExpandShortcut() {
     document.addEventListener("keydown", (event) => {
-        // Ignore if typing in input/textarea
-        const active = document.activeElement;
-        if (
-            active &&
-            (active.tagName === "INPUT" ||
-             active.tagName === "TEXTAREA" ||
-             active.isContentEditable)
-        ) {
-            return;
-        }
-
         if (event.metaKey && event.shiftKey && event.key.toLowerCase() === "0") {
             event.preventDefault();
             triggerSuperExpand();

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ekobro",
+  "name": "EkoBro",
   "version": "1.0.0",
   "description": "Modifies website UI, adds shortcuts, and enhances user experience on Eko's experience review pages.",
   "permissions": ["activeTab"],
