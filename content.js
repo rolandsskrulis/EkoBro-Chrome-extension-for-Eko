@@ -226,6 +226,12 @@ function movePopup(modal) {
 }
 
 function cloneTicketsBelowModal(modal) {
+    // Remove previously cloned tickets
+    const existingWrapper = document.querySelector(".cloned-tickets-wrapper");
+    if (existingWrapper) {
+        existingWrapper.remove();
+    }
+
     const tickets = document.querySelectorAll(".tickets-list .ticket-item");
 
     if (!tickets.length) {
@@ -247,10 +253,9 @@ function cloneTicketsBelowModal(modal) {
 
         // Hide buttons inside cloned ticket
         clonedTicket.querySelectorAll("button").forEach(btn => {
-            btn.style.display = "none"; // must be lowercase 'none'
+            btn.style.display = "none";
         });
 
-        // Styles
         clonedTicket.style.width = "25%";
         clonedTicket.style.minWidth = "200px";
         clonedTicket.style.boxSizing = "border-box";
