@@ -51,7 +51,10 @@ const SELECTORS = {
     expandContainer: '//div[@class="product-under-review"]/div/p-button[1]',
 
     // Container for products under review - used for footer label injection
-    productUnderReviewContainer: '.products-under-review'
+    productUnderReviewContainer: '.products-under-review',
+
+    // Current active step in the sidebar - used for extracting step number to add to description
+    currentActiveStep: '//li[contains(@class, "active")]/div[@class="step-content"]/span[contains(@class, "active")]'
 }
 
 
@@ -98,6 +101,9 @@ waitForControls();
 
 // Super expand button shortcut
 registerSuperExpandShortcut();
+
+// Add active step to description field on hotkey
+addActiveStepToDescriptionShortcut();
 
 // Add label with extension version
 injectEkoVersion(); 
@@ -447,6 +453,94 @@ function initStepKeyboardNavigation() {
         e.preventDefault();
     });
 } // ********** Step keyboard navigation: Listen for arrow key presses and navigate through substeps **********
+
+
+// ********** Add active step to description field on hotkey **********
+function addActiveStepToDescriptionShortcut() {
+    console.log("Add active step to description shortcut")
+    document.addEventListener("keydown", function (e) {
+        if (e.altKey && e.code === "KeyA") {
+
+            e.preventDefault();
+            if (e.repeat) return;
+
+            const activeStep = document.evaluate(
+                '//li[contains(@class, "active")]/div[@class="step-content"]/span[contains(@class, "active")]',
+                document,
+                null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE,
+                null
+            ).singleNodeValue;
+
+            if (!activeStep) return;
+
+            const stepText = activeStep.textContent.trim();
+            const section = stepText.split(" ")[0];
+            if (!section) return;
+
+            const description = document.querySelector("textarea");
+            if (!description) return;
+
+            let value = description.value.trim();
+
+            // Detect section list at beginning
+            const match = value.match(/^(\d+(\.\d+)?(?:,\s*\d+(\.\d+)?)*)/);
+
+            let sections = [];
+            let text = value;
+
+            if (match) {
+                sections = match[0]
+                    .split(",")
+                    .map(s => s.trim())
+                    .filter(Boolean);
+
+                text = value.slice(match[0].length).trim();
+
+                // remove optional dash
+                text = text.replace(/^-\s*/, "");
+            }
+
+            const index = sections.indexOf(section);
+
+            // Toggle section
+            if (index !== -1) {
+                sections.splice(index, 1);
+            } else {
+                sections.push(section);
+            }
+
+            // Sort sections numerically
+            sections.sort((a, b) => {
+                const pa = a.split(".").map(Number);
+                const pb = b.split(".").map(Number);
+
+                for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+                    const na = pa[i] || 0;
+                    const nb = pb[i] || 0;
+                    if (na !== nb) return na - nb;
+                }
+                return 0;
+            });
+
+            const sectionText = sections.join(", ");
+
+            let newValue = "";
+
+            if (sectionText && text) {
+                newValue = sectionText + " - " + text;
+            } else if (sectionText) {
+                newValue = sectionText + " - ";
+            } else {
+                newValue = text;
+            }
+
+            description.value = newValue;
+
+            description.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+    });
+} // ********** Add active step to description field on hotkey **********
 
 
 // ************ Footer version label ************
