@@ -12,6 +12,8 @@
 3. **Section Video Navigation**
     - Switch between section videos using arrow keys.
 4. **Keyboard Shortcuts**
+    - Add section to description: `Option + A`
+    - Navigate sections: `Arrow up/down`
     - Open PDP: `Cmd + Shift + 7`
     - Open Backstage: `Cmd + Shift + 8`
     - Super Expand: `Cmd + Shift + 0`
