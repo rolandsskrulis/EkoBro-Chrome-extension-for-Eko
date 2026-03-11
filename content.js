@@ -105,8 +105,8 @@ registerSuperExpandShortcut();
 // Add active step to description field on hotkey
 addActiveStepToDescriptionShortcut();
 
-// Add label with extension version
-injectEkoVersion(); 
+// Add label with shortcuts and extension version
+injectEkoFooter(); 
 
 // ***************** Main Logic *****************
 
@@ -543,38 +543,108 @@ function addActiveStepToDescriptionShortcut() {
 } // ********** Add active step to description field on hotkey **********
 
 
-// ************ Footer version label ************
-function injectEkoVersion() {
+// ************ Footer version label + shortcuts tooltip ************
+function injectEkoFooter() {
+    const shortcuts = [
+        "Option+A → Add section to description",
+        "Arrow up/down → Navigate sections",
+        "Cmd+Shift+7 → Open live PDP",
+        "Cmd+Shift+8 → Open Backstage",
+        "Cmd+Shift+0 → Super expand/collapse player"
+    ];
+
     const observer = new MutationObserver((mutations, obs) => {
         const container = document.querySelector('.product-under-review');
         if (container) {
-            // Avoid adding duplicates
-            if (!container.querySelector('.eko-version-label')) {
+            if (!container.querySelector('.eko-footer')) {
                 const version = chrome.runtime.getManifest().version;
+
+                const footerWrapper = document.createElement('div');
+                footerWrapper.className = 'eko-footer';
+                footerWrapper.style.marginTop = 'auto';
+                footerWrapper.style.textAlign = 'center';
+                footerWrapper.style.fontWeight = 'bold';
+                footerWrapper.style.padding = '10px 0';
+                footerWrapper.style.fontSize = '12px';
+                footerWrapper.style.color = '#d7d7d7';
+                footerWrapper.style.display = 'flex';
+                footerWrapper.style.flexDirection = 'column';
+                footerWrapper.style.alignItems = 'center';
+                footerWrapper.style.position = 'relative';
+
+                const labelContainer = document.createElement('div');
+                labelContainer.style.display = 'flex';
+                labelContainer.style.alignItems = 'center';
+                labelContainer.style.gap = '6px';
+
                 const versionLabel = document.createElement('div');
-                versionLabel.className = 'eko-version-label';
                 versionLabel.textContent = `EkoBro 🦎 ${version}`;
-                
-                // Style to stay at the bottom
-                versionLabel.style.marginTop = 'auto';
-                versionLabel.style.textAlign = 'center';
-                versionLabel.style.fontWeight = 'bold';
-                versionLabel.style.padding = '10px 0';
-                versionLabel.style.fontSize = '12px';
-                versionLabel.style.color = '#d7d7d7';
+
+                // Neutral help icon (SVG)
+                const helpIcon = document.createElement('div');
+                helpIcon.style.cursor = 'default';
+                helpIcon.style.display = 'flex';
+                helpIcon.style.alignItems = 'center';
+
+                helpIcon.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d7d7d7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.9.4-1.5 1-1.5 2"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                `;
+
+                // Tooltip
+                const tooltip = document.createElement('div');
+                tooltip.style.position = 'absolute';
+                tooltip.style.bottom = '35px';
+                tooltip.style.background = '#2b2b2b';
+                tooltip.style.border = '1px solid #444';
+                tooltip.style.borderRadius = '6px';
+                tooltip.style.padding = '8px 10px';
+                tooltip.style.fontWeight = 'normal';
+                tooltip.style.fontSize = '12px';
+                tooltip.style.color = '#d7d7d7';
+                tooltip.style.textAlign = 'left';
+                tooltip.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4)';
+                tooltip.style.minWidth = '220px';
+                tooltip.style.opacity = '0';
+                tooltip.style.pointerEvents = 'none';
+                tooltip.style.transition = 'opacity 0.15s ease';
+                tooltip.style.zIndex = '9999';
+
+                shortcuts.forEach(hotkey => {
+                    const div = document.createElement('div');
+                    div.textContent = hotkey;
+                    tooltip.appendChild(div);
+                });
+
+                // Hover behavior
+                helpIcon.addEventListener('mouseenter', () => {
+                    tooltip.style.opacity = '1';
+                });
+
+                helpIcon.addEventListener('mouseleave', () => {
+                    tooltip.style.opacity = '0';
+                });
+
+                labelContainer.appendChild(versionLabel);
+                labelContainer.appendChild(helpIcon);
+
+                footerWrapper.appendChild(labelContainer);
+                footerWrapper.appendChild(tooltip);
 
                 container.style.display = 'flex';
                 container.style.flexDirection = 'column';
 
-                container.appendChild(versionLabel);
+                container.appendChild(footerWrapper);
             }
-            obs.disconnect(); // stop observing once added
+            obs.disconnect();
         }
     });
 
-    // Start observing the DOM
     observer.observe(document.body, { childList: true, subtree: true });
-}// ************ Footer version label ************
+} // ************ Footer version label + shortcuts tooltip ************
 
 
 // ***************** helper/utilities stuff *****************
